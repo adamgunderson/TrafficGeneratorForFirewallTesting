@@ -1,0 +1,37 @@
+# filename: traffic-generator.service
+# Place this file in /etc/systemd/system/
+
+[Unit]
+Description=Network Traffic Generator for Firewall Testing
+After=network.target
+Documentation=https://github.com/yourrepo/traffic-generator
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/opt/traffic-generator
+ExecStart=/usr/bin/python3 /opt/traffic-generator/traffic_generator.py --daemon
+ExecReload=/bin/kill -HUP $MAINPID
+ExecStop=/bin/kill -TERM $MAINPID
+Restart=on-failure
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+# Security settings
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/var/log
+NoNewPrivileges=false
+CapabilityBoundingSet=CAP_NET_RAW CAP_NET_ADMIN
+AmbientCapabilities=CAP_NET_RAW CAP_NET_ADMIN
+
+# Resource limits
+CPUQuota=50%
+MemoryLimit=256M
+TasksMax=10
+
+[Install]
+WantedBy=multi-user.target
