@@ -5,6 +5,13 @@ SCRIPT_PATH="/opt/traffic-generator/traffic_generator.py"
 CONFIG_PATH="/opt/traffic-generator/traffic_config.json"
 SERVICE_NAME="traffic-generator"
 
+# Detect if using virtual environment
+if [ -f "/opt/traffic-generator/venv/bin/python3" ]; then
+    PYTHON_CMD="/opt/traffic-generator/venv/bin/python3"
+else
+    PYTHON_CMD="python3"
+fi
+
 # Color codes for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -39,21 +46,21 @@ show_menu() {
 # Quick test
 quick_test() {
     echo -e "${YELLOW}Running quick test (100 packets)...${NC}"
-    python3 $SCRIPT_PATH -m count -n 100
+    $PYTHON_CMD $SCRIPT_PATH -m count -n 100
 }
 
 # Timed test
 timed_test() {
     read -p "Enter duration in seconds: " duration
     echo -e "${YELLOW}Running test for $duration seconds...${NC}"
-    python3 $SCRIPT_PATH -m duration -d $duration
+    $PYTHON_CMD $SCRIPT_PATH -m duration -d $duration
 }
 
 # Packet count test
 packet_test() {
     read -p "Enter number of packets: " count
     echo -e "${YELLOW}Sending $count packets...${NC}"
-    python3 $SCRIPT_PATH -m count -n $count
+    $PYTHON_CMD $SCRIPT_PATH -m count -n $count
 }
 
 # Start service
@@ -139,7 +146,7 @@ EOF
         
         read -p "Enter stress test duration (seconds): " stress_duration
         echo -e "${RED}Starting stress test for $stress_duration seconds...${NC}"
-        python3 $SCRIPT_PATH -c /tmp/stress_config.json -m duration -d $stress_duration
+        $PYTHON_CMD $SCRIPT_PATH -c /tmp/stress_config.json -m duration -d $stress_duration
         
         rm -f /tmp/stress_config.json
         echo -e "${GREEN}Stress test completed${NC}"
